@@ -1,17 +1,12 @@
-const express = require('express')
-const app = express();
-const MongoClient = require('mongodb').MongoClient;
-const ObjectID = require('mongodb').ObjectID;
+const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
-const port = 5055;
-
+const {MongoClient, ObjectId } = require('mongodb');
+const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.get('/', (req, res) => {
-  res.send('Hello World!')
-})
+const port = 5000;
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.ijulk.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
 
@@ -45,7 +40,7 @@ client.connect(err => {
 
 //<=================== find a single game by id =====================>
   app.get('/findGame/:id', (req, res) => {
-    const id = ObjectID(req.params.id);
+    const id = ObjectId(req.params.id);
     gamesCollection.find({ _id: id })
     .toArray((err, items) => {
       res.send(items)
@@ -77,7 +72,7 @@ client.connect(err => {
 
 //<=================== delete a game by id ========================>
   app.delete('/deleteGame/:id', (req, res) => {
-    const id = ObjectID(req.params.id);
+    const id = ObjectId(req.params.id);
     gamesCollection.deleteOne({ _id: id })
       .then(documents => res.send({status: 'Successfully Delete', code: 200}));
   })
