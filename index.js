@@ -4,7 +4,7 @@ const MongoClient = require('mongodb').MongoClient;
 const ObjectID = require('mongodb').ObjectID;
 const cors = require('cors');
 require('dotenv').config();
-const port = process.env.PORT || 5055;
+const port = 5055;
 
 app.use(cors());
 app.use(express.json());
@@ -85,4 +85,4 @@ client.connect(err => {
 
 });
 
-app.listen(port)
+app.listen( process.env.PORT || port)
