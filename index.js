@@ -12,12 +12,12 @@ app.get('/', (req, res) => {
   res.send('Hello World!')
 })
 
-const uri = `mongodb+srv://emaWatson:emaWatsonPotter81@cluster0.ijulk.mongodb.net/upexgameshop?retryWrites=true&w=majority`;
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.ijulk.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
 
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 client.connect(err => {
-  const gamesCollection = client.db( "upexgameshop").collection("games");
-  const ordersCollection = client.db( "upexgameshop" ).collection("orders");
+  const gamesCollection = client.db(`${process.env.DB_NAME}`).collection("games");
+  const ordersCollection = client.db( `${process.env.DB_NAME}` ).collection("orders");
 
   console.log("database connected successfully");
 
