@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const {MongoClient, ObjectId } = require('mongodb');
+const { MongoClient, ObjectId } = require('mongodb');
 require('dotenv').config()
 const app = express();
 app.use(cors());
@@ -16,72 +16,55 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster
 
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 client.connect(err => {
-  const gamesCollection = client.db(`${process.env.DB_NAME}`).collection("games");
-  const ordersCollection = client.db( `${process.env.DB_NAME}` ).collection("orders");
+  const postsCollection = client.db(`${process.env.DB_NAME}`).collection("posts");
 
   console.log("database connected successfully");
 
-//<<<<<<<<<<<<<<<<<<<<<<< user part >>>>>>>>>>>>>>>>>>>>>>>
+  //<<<<<<<<<<<<<<<<<<<<<<< user part >>>>>>>>>>>>>>>>>>>>>>>
 
 
-//=====================find order list by email=====================
-  app.get('/userTotalOrderedLists/:email', (req, res) => {
-    const email = req.params.email;
-    ordersCollection.find({email: email}).sort({$natural:-1})
-    .toArray((err, items) => {
-      res.send(items)
-    })
-})
 
-//================== order a single game ========================
-  app.post('/addOrder', (req, res) => {
-    const newOrder = req.body;
-    ordersCollection.insertOne(newOrder)
-    .then(() => {
-        res.send({status: 'Success Ordered', code: 200});
-    })
-  });
 
-//<=================== find a single game by id =====================>
-  app.get('/findGame/:id', (req, res) => {
+  //<=================== find a single game by id =====================>
+  app.get('/findPost/:id', (req, res) => {
     const id = ObjectId(req.params.id);
-    gamesCollection.find({ _id: id })
-    .toArray((err, items) => {
-      res.send(items)
-    })
+    postsCollection.find({ _id: id })
+      .toArray((err, items) => {
+        res.send(items)
+      })
   })
 
-//<=========== Shared Api(ADMIN + USER)======= get all games list ==============> 
-  app.get('/games', (req, res) => {
-    gamesCollection.find()
+  //<=========== Shared Api(ADMIN + USER)======= get all games list ==============> 
+  app.get('/posts', (req, res) => {
+    postsCollection.find()
       .toArray((err, items) => {
         res.send(items)
       })
   })
 
 
-//<<<<<<<<<<<<<<<<<<<<< admin part >>>>>>>>>>>>>>>>>>>>>>
+  //<<<<<<<<<<<<<<<<<<<<< admin part >>>>>>>>>>>>>>>>>>>>>>
 
 
-//<======================= add a game =======================>
-  app.post('/admin/addGame', (req, res) => {
-    const newGame = req.body;
-    gamesCollection.insertOne(newGame)
+  //<======================= add a post =======================>
+  app.post('/admin/addpost', (req, res) => {
+    const newPost = req.body;
+    postsCollection.insertOne(newPost)
       .then(result => {
         console.log('inserted count', result.insertedCount);
-        res.send({status: 'success', code: 200});
+        res.send({ status: 'success', code: 200 });
       })
   })
 
 
-//<=================== delete a game by id ========================>
-  app.delete('/deleteGame/:id', (req, res) => {
+  //<=================== delete a game by id ========================>
+  app.delete('/admin/deletePost/:id', (req, res) => {
     const id = ObjectId(req.params.id);
-    gamesCollection.deleteOne({ _id: id })
-      .then(documents => res.send({status: 'Successfully Delete', code: 200}));
+    postsCollection.deleteOne({ _id: id })
+      .then(documents => res.send({ status: 'Successfully Delete', code: 200 }));
   })
 
 
 });
 
-app.listen( process.env.PORT || port)
+app.listen(process.env.PORT || port)
